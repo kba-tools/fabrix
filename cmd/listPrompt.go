@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -91,28 +92,34 @@ func chooseDomain() {
 		}
 	}
 
-	items := []list.Item{}
+	
 
 	// Append domain names as selectable items
-	for _, domain := range domains {
-		items = append(items, item(domain))
-	}
+	// for _, domain := range domains {
+	// 	items = append(items, item(domain))
+	// }
 
-	const defaultWidth = 20
-	const listHeight = 10
+	networkOptions := ""
 
-	l := list.New(items, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = "Please select the Domain:"
-	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	// l.Styles.HelpStyle = helpStyle
+	listOfDomains := huh.NewForm(
+		huh.NewGroup(
 
-	m := model2{list: l}
+			huh.NewSelect[string]().
+				Options(huh.NewOptions(domains...)...).
+				Title("Select an Option").
+				Description("Choose the domain").
+				Value(&networkOptions),
+		),
+	).WithShowHelp(true).WithTheme(huh.ThemeCharm())
 
-	if _, err := tea.NewProgram(m).Run(); err != nil {
-		fmt.Println("Error running program:", err)
+	err = listOfDomains.Run()
+
+	if err != nil {
+		if err == huh.ErrUserAborted {
+			os.Exit(130)
+		}
+		fmt.Println("Uh oh:", err)
 		os.Exit(1)
 	}
+
 }

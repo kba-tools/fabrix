@@ -9,18 +9,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ChaincodeParams struct {
-	ccPath     string
-	ccLang     string
-	ccName     string
-	ccLabel    string
-	ccVersion  string
-	ccSequence string
-	deploy     bool
-}
+// type mainChoice struct {
+// 	choice int
+// }
 
 // networkCmd represents the network command
-var deployPromptCmd = &cobra.Command{
+var applicationStart = &cobra.Command{
 	Use:     "deployPrompt",
 	Aliases: []string{"dccp"},
 	Short:   "Use this command to deploy chaincode.",
@@ -106,5 +100,5 @@ and usage of using your command.`,
 }
 
 func init() {
-	rootCmd.AddCommand(deployPromptCmd)
+	rootCmd.AddCommand(applicationStart)
 }

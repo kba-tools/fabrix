@@ -2,10 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 )
 
@@ -74,70 +78,101 @@ func (m model3) View() string {
 	return "\n" + m.list.View()
 }
 
-func domainOptions() {
-	items := []list.Item{
-		item("Start network"),
-		item("Info"),
-		item("Deploy chaincode"),
-		item("Upgrade chaincode"),
-		item("Down network"),
-		item("Remove domain"),
-		item("Home"),
-		item("Exit"),
+var (
+	titleStyle        = lipgloss.NewStyle().MarginLeft(2)
+	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
+	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
+	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
+)
+
+type item string
+
+func (i item) FilterValue() string { return "" }
+
+type itemDelegate struct{}
+
+// var choosenDomain string
+
+func (d itemDelegate) Height() int                             { return 1 }
+func (d itemDelegate) Spacing() int                            { return 0 }
+func (d itemDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
+func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+	i, ok := listItem.(item)
+	if !ok {
+		return
 	}
 
-	const defaultWidth = 20
-	const domainsListHeight = 12
+	str := fmt.Sprintf("%d. %s", index+1, i)
 
-	l := list.New(items, itemDelegate{}, defaultWidth, domainsListHeight)
-	l.Title = "Choose an option:"
-	l.SetShowStatusBar(true)
-	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	// l.Styles.HelpStyle = helpStyle
+	fn := itemStyle.Render
+	if index == m.Index() {
+		fn = func(s ...string) string {
+			return selectedItemStyle.Render("> " + strings.Join(s, " "))
+		}
+	}
 
-	m := model3{list: l}
+	fmt.Fprint(w, fn(str))
+}
 
-	prog, err := tea.NewProgram(m).Run()
+func domainOptions() {
+
+	networkOptions := ""
+	nwOptions := huh.NewForm(
+		huh.NewGroup(
+
+			huh.NewSelect[string]().
+				Options(huh.NewOptions("Start network", "Info", "Deploy chaincode", "Upgrade chaincode", "Down network", "Remove domain", "Home", "Exit")...).
+				Title("Select an Option").
+				// Description("What you want to do?").
+				Value(&networkOptions),
+		),
+	).WithShowHelp(true).WithTheme(huh.ThemeCharm())
+
+	err := nwOptions.Run()
+
 	if err != nil {
-		fmt.Println("Error running program:", err)
+		if err == huh.ErrUserAborted {
+			os.Exit(130)
+		}
+		fmt.Println("Uh oh:", err)
 		os.Exit(1)
 	}
 
-	if m, ok := prog.(model3); ok {
-		switch m.choice {
-		case "Start network":
-			rootCmd.SetArgs([]string{"up", choosenDomain})
-			rootCmd.Execute()
+	switch networkOptions {
 
-		case "Info":
-			rootCmd.SetArgs([]string{"list"})
-			rootCmd.Execute()
+	case "Start network":
+		rootCmd.SetArgs([]string{"up", choosenDomain})
+		rootCmd.Execute()
 
-		case "Deploy chaincode":
-			rootCmd.SetArgs([]string{"deploy", choosenDomain})
-			rootCmd.Execute()
+	case "Info":
+		rootCmd.SetArgs([]string{"list"})
+		rootCmd.Execute()
 
-		case "Upgrade chaincode":
-			rootCmd.SetArgs([]string{"upgrade", choosenDomain})
-			rootCmd.Execute()
+	case "Deploy chaincode":
+		rootCmd.SetArgs([]string{"deploy", choosenDomain})
+		rootCmd.Execute()
 
-		case "Down network":
-			rootCmd.SetArgs([]string{"down", choosenDomain})
-			rootCmd.Execute()
+	case "Upgrade chaincode":
+		rootCmd.SetArgs([]string{"upgrade", choosenDomain})
+		rootCmd.Execute()
 
-		case "Remove domain":
-			rootCmd.SetArgs([]string{"remove", choosenDomain})
-			rootCmd.Execute()
+	case "Down network":
+		rootCmd.SetArgs([]string{"down", choosenDomain})
+		rootCmd.Execute()
 
-		case "Home":
-			rootCmd.SetArgs([]string{"sp"})
-			rootCmd.Execute()
+	case "Remove domain":
+		rootCmd.SetArgs([]string{"remove", choosenDomain})
+		rootCmd.Execute()
 
-		case "Exit":
-			fmt.Println("Exiting...")
-			os.Exit(0)
-		}
+	case "Home":
+		rootCmd.SetArgs([]string{"sp"})
+		rootCmd.Execute()
+
+	case "Exit":
+		fmt.Println("Exiting...")
+		os.Exit(0)
 	}
+
 }

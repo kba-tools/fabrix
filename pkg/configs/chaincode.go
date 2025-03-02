@@ -196,7 +196,6 @@ peer lifecycle chaincode package chaincode.tar.gz --path ${PWD}/${CHAINCODE_PATH
 		firstPeer := peers[0].(map[string]interface{})
 		peerName := firstPeer["name"].(string)
 		peerPort := uint16(firstPeer["port"].(float64))
-
 		orderMap := viper.Get("orderer").(map[string]interface{})
 		// ordererName := orderMap["name"].(string)
 		ordererPeers := orderMap["peers"].([]interface{})

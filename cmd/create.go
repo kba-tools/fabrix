@@ -1,12 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
-	"github.com/fatih/color"
-	"github.com/vineshtk/fabrix/pkg/inputs"
-
 	"github.com/spf13/cobra"
 )
 
@@ -19,21 +13,22 @@ var networkCmd = &cobra.Command{
 and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Retrieve the value of the flag
-		channelName, err := cmd.Flags().GetString("channel")
-		if err != nil {
-			fmt.Println("Error retrieving domain flag:", err)
-			os.Exit(1)
-		}
+		// channelName, err := cmd.Flags().GetString("channel")
+		// if err != nil {
+		// 	fmt.Println("Error retrieving domain flag:", err)
+		// 	os.Exit(1)
+		// }
 
-		version, err := cmd.Flags().GetString("version")
-		if err != nil {
-			fmt.Println("Error retrieving domain flag:", err)
-			os.Exit(1)
-		}
-		color.Green("Prompt will ask you to give all the details of your network, please provide details acordingly.")
-		inputs.GetInputsFromUser(channelName, version)
-		rootCmd.SetArgs([]string{"sp"})
-		rootCmd.Execute()
+		// version, err := cmd.Flags().GetString("version")
+		// if err != nil {
+		// 	fmt.Println("Error retrieving domain flag:", err)
+		// 	os.Exit(1)
+		// }
+		// color.Green("Prompt will ask you to give all the details of your network, please provide details acordingly.")
+		// inputs.GetInputsFromUser(channelName, version)
+		inputFromUser()
+		// rootCmd.SetArgs([]string{"sp"})
+		
 	},
 }
 

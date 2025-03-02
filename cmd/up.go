@@ -21,6 +21,7 @@ and usage of using your command.`,
 		scriptPath := fmt.Sprintf("./fabrix/%v/Network/startNetwork.sh", args[0])
 		scriptDir := fmt.Sprintf("./fabrix/%v/Network/", args[0])
 
+		
 		err := os.Chmod(scriptPath, 0755)
 		if err != nil {
 			fmt.Printf("Error making script executable: %v\n", err)
