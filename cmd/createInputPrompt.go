@@ -125,6 +125,6 @@ func inputFromUser() {
 
 	orgsNumber, _ := strconv.Atoi(numberOfOrganisations)
 
-	configs.CreateConfigs(domainName, orgPeers, channelName, version, orgsNumber)
+	configs.CreateConfigs(domainName, orgPeers, channelName, fabricVersion, orgsNumber)
 
 }

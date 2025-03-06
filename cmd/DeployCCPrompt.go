@@ -2,9 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/charmbracelet/huh"
+	"github.com/vineshtk/fabrix/pkg/configs"
 
 	"github.com/spf13/cobra"
 )
@@ -36,6 +39,15 @@ and usage of using your command.`,
 		// }
 
 		// fmt.Println("cc dir", currentDir)
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Error getting home directory:", err)
+			return
+		}
+
+		// fmt.Println("full path:", nwPath)
+
+		// fmt.Println("Relative path:", relativePath)
 
 		deployCC := huh.NewForm(
 			huh.NewGroup(
@@ -64,6 +76,8 @@ and usage of using your command.`,
 					Description("Select your chaincode directory.").
 					DirAllowed(true).
 					FileAllowed(false).
+					CurrentDirectory(homeDir).
+					ShowPermissions(false).
 					Value(&chaincodeParams.ccPath),
 
 				huh.NewInput().
@@ -82,7 +96,7 @@ and usage of using your command.`,
 			),
 		).WithShowHelp(true).WithTheme(huh.ThemeDracula())
 
-		err := deployCC.Run()
+		err = deployCC.Run()
 		if err != nil {
 			fmt.Println("Uh oh:", err)
 			os.Exit(1)
@@ -90,17 +104,25 @@ and usage of using your command.`,
 
 		fmt.Println("PATH FROM SELECTOR", chaincodeParams.ccPath)
 
-		// ccRelativePath, err := filepath.Rel(currentDir, chaincodeParams.ccPath)
+		nwPath := fmt.Sprintf("./fabrix/%v/Network", choosenDomain)
 
-		// if err != nil {
-		// 	fmt.Println("error in rel path finding", err)
+		// Resolve to absolute (full) path
+		nwPath, err = filepath.Abs(nwPath)
+		if err != nil {
+			log.Fatalf("Failed to get absolute path: %v", err)
+		}
 
-		// }
+		ccRelativePath, err := filepath.Rel(nwPath, chaincodeParams.ccPath)
+		if err != nil {
+			log.Fatalf("Failed to get relative path: %v", err)
+		}
 
-		fmt.Println(chaincodeParams.ccLabel, chaincodeParams.ccLang, chaincodeParams.ccName, chaincodeParams.ccPath, chaincodeParams.ccSequence, chaincodeParams.ccVersion)
+		fmt.Println("rel  path", ccRelativePath)
+
+		fmt.Println(chaincodeParams.ccLabel, chaincodeParams.ccLang, chaincodeParams.ccName, ccRelativePath, chaincodeParams.ccSequence, chaincodeParams.ccVersion)
 
 		// call the function to deploy chaincode to network
-		// configs.InstallChaincode("auto.com", ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
+		configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
 
 	},
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
@@ -29,62 +27,17 @@ func init() {
 
 var choosenDomain string
 
-type model2 struct {
-	list     list.Model
-	choice   string
-	quitting bool
-}
-
-func (m model2) Init() tea.Cmd {
-	return nil
-}
-
-func (m model2) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.list.SetWidth(msg.Width)
-		return m, nil
-
-	case tea.KeyMsg:
-		switch keypress := msg.String(); keypress {
-		case "q", "ctrl+c":
-			m.quitting = true
-			return m, tea.Quit
-
-		case "enter":
-			i, ok := m.list.SelectedItem().(item)
-			if ok {
-				m.choice = string(i)
-			}
-			return m, tea.Quit
-		}
-	}
-
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
-}
-
-func (m model2) View() string {
-	if m.choice != "" {
-		choosenDomain = m.choice
-		return quitTextStyle.Render(fmt.Sprintf("Ok, Choosen Network: %s", m.choice))
-	}
-	if m.quitting {
-		return quitTextStyle.Render("Exit? ... See you later")
-	}
-	return "\n" + m.list.View()
-}
-
 func chooseDomain() {
 
 	rootDir := "./fabrix"
 	// Read the directory
 	entries, err := os.ReadDir(rootDir)
 	if err != nil {
-		fmt.Printf("Error reading directory: %v\n", err)
+		_ = fmt.Errorf("error reading directory: %v\n", err)
 	}
 	var domains []string
+	var isDomains bool
+	var goBack bool
 	// List directories
 	for _, entry := range entries {
 		if entry.IsDir() {
@@ -92,24 +45,30 @@ func chooseDomain() {
 		}
 	}
 
-	
-
-	// Append domain names as selectable items
-	// for _, domain := range domains {
-	// 	items = append(items, item(domain))
-	// }
-
-	networkOptions := ""
+	if len(domains) > 0 {
+		isDomains = true
+	}
 
 	listOfDomains := huh.NewForm(
-		huh.NewGroup(
 
+		huh.NewGroup(huh.NewConfirm().
+			Title("No domains available, create new configuartion and come back here!!").
+			Value(&goBack).
+			Affirmative("Go back").
+			Negative("Exit")).WithHideFunc(func() bool {
+			return isDomains
+		}),
+
+		huh.NewGroup(
 			huh.NewSelect[string]().
 				Options(huh.NewOptions(domains...)...).
-				Title("Select an Option").
+				Title("Available domains").
 				Description("Choose the domain").
-				Value(&networkOptions),
-		),
+				Value(&choosenDomain),
+		).WithHideFunc(func() bool {
+			return !isDomains
+		}),
+		
 	).WithShowHelp(true).WithTheme(huh.ThemeCharm())
 
 	err = listOfDomains.Run()
@@ -120,6 +79,19 @@ func chooseDomain() {
 		}
 		fmt.Println("Uh oh:", err)
 		os.Exit(1)
+	}
+
+	if choosenDomain != "" {
+		rootCmd.SetArgs([]string{"dp"})
+		rootCmd.Execute()
+	}
+
+	if goBack {
+		rootCmd.SetArgs([]string{"sp"})
+		rootCmd.Execute()
+	} else {
+		fmt.Println("Exiting...")
+		os.Exit(0)
 	}
 
 }

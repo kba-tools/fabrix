@@ -16,7 +16,6 @@ peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.aut
 peer chaincode query -C $CHANNEL_NAME -n sample-chaincode -c '{"Args":["GetAllCars"]}'
 
 
-
 [
     {
         "name": "OrderCollection",

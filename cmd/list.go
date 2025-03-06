@@ -14,8 +14,8 @@ and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rootCmd.SetArgs([]string{"lp"})
 		rootCmd.Execute()
-		rootCmd.SetArgs([]string{"dp"})
-		rootCmd.Execute()
+		// rootCmd.SetArgs([]string{"dp"})
+		// rootCmd.Execute()
 	},
 }
 
