@@ -96,7 +96,7 @@ func CreateDockerComposeCA(domainName string, orgPeers map[string]int, numberOfO
 	// for reusing later for generating certificates and script files
 
 	// set values for each fields in docker compose file
-	viper.Set("version", "3.7")
+	
 	viper.Set("networks.test.name", "fabric_test")
 
 	info = &NetworkInfo{}
@@ -233,7 +233,6 @@ func CreateDockerComposeMembers(domainName string, orgPeers map[string]int, vers
 	path := fmt.Sprintf("fabrix/%v/Network/docker", domainName)
 	custom_viper.AddConfigPath(path)
 
-	custom_viper.Set("version", "3.7")
 	custom_viper.Set("networks:test:name", "fabric_test")
 	// volumes will be added when the peers are created
 
