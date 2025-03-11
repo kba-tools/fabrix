@@ -21,7 +21,6 @@ and usage of using your command.`,
 		scriptPath := fmt.Sprintf("./fabrix/%v/Network/startNetwork.sh", args[0])
 		scriptDir := fmt.Sprintf("./fabrix/%v/Network/", args[0])
 
-		
 		err := os.Chmod(scriptPath, 0755)
 		if err != nil {
 			fmt.Printf("Error making script executable: %v\n", err)
@@ -34,35 +33,14 @@ and usage of using your command.`,
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
 
+		// command.Stdout = io.Discard
+		// command.Stderr = io.Discard
+
 		err = command.Run()
 		if err != nil {
 			fmt.Printf("Error executing script: %v\n", err)
 			return
 		}
-
-		// p := tea.NewProgram(newModel("Please wait! setting up the network for you!"))
-
-		// go func() {
-		// 	err = command.Start()
-		// 	if err != nil {
-		// 		fmt.Printf("Error starting script: %v\n", err)
-		// 		return
-		// 	}
-
-		// 	// Wait for the script to finish
-		// 	err = command.Wait()
-		// 	if err != nil {
-		// 		fmt.Printf("Error executing script: %v\n", err)
-		// 	}
-
-		// 	// Stop the spinner
-		// 	p.Send(stopMsg{})
-		// }()
-
-		// if _, err := p.Run(); err != nil {
-		// 	fmt.Println("could not run program:", err)
-		// 	os.Exit(1)
-		// }
 
 		fmt.Println("Network started successfully!")
 		rootCmd.SetArgs([]string{"dp"})

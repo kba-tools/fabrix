@@ -259,10 +259,10 @@ peer lifecycle chaincode package chaincode.tar.gz --path ${PWD}/${CHAINCODE_PATH
 		return
 	}
 
-	// Display file contents
-	fmt.Println("Script file contents:")
-	content, _ := os.ReadFile(tmpFile.Name())
-	fmt.Println(string(content))
+	// // Display file contents
+	// fmt.Println("Script file contents:")
+	// content, _ := os.ReadFile(tmpFile.Name())
+	// fmt.Println(string(content))
 
 	// Make the script executable
 	err = os.Chmod(tmpFile.Name(), 0755)
@@ -285,8 +285,9 @@ peer lifecycle chaincode package chaincode.tar.gz --path ${PWD}/${CHAINCODE_PATH
 		return
 	}
 
-	fmt.Println("Script executed successfully!")
 }
+
+
 
 func CompileChaincode(ccPath string, ccLang string) {
 

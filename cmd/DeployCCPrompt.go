@@ -7,7 +7,10 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/huh"
+	"github.com/charmbracelet/huh/spinner"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/vineshtk/fabrix/pkg/configs"
+	"golang.org/x/term"
 
 	"github.com/spf13/cobra"
 )
@@ -102,7 +105,6 @@ and usage of using your command.`,
 			os.Exit(1)
 		}
 
-		fmt.Println("PATH FROM SELECTOR", chaincodeParams.ccPath)
 
 		nwPath := fmt.Sprintf("./fabrix/%v/Network", choosenDomain)
 
@@ -117,12 +119,38 @@ and usage of using your command.`,
 			log.Fatalf("Failed to get relative path: %v", err)
 		}
 
-		fmt.Println("rel  path", ccRelativePath)
+		action := func() {
+			configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
 
-		fmt.Println(chaincodeParams.ccLabel, chaincodeParams.ccLang, chaincodeParams.ccName, ccRelativePath, chaincodeParams.ccSequence, chaincodeParams.ccVersion)
+			width, _, err := term.GetSize(int(os.Stdout.Fd()))
+			if err != nil {
+				fmt.Println("Failed to get terminal size:", err)
+				return
+			}
 
-		// call the function to deploy chaincode to network
-		configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
+			// Create styled text
+			styledText := lipgloss.NewStyle().
+				BorderStyle(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color("63")).
+				Padding(1, 2).
+				Render("edfghbn ugggggggggg hvgffukjyig  jkvhgfcgv hdrythfgkj")
+
+			// Calculate the left padding to shift text to the right side
+			textWidth := lipgloss.Width(styledText)
+			leftPadding := width - textWidth
+
+			// Apply the padding (spaces on the left)
+			finalOutput := lipgloss.NewStyle().PaddingLeft(leftPadding).Render(styledText)
+
+			// Print
+			fmt.Println(finalOutput)
+		}
+		
+
+		if err := spinner.New().Title("Deployment in progress...").Action(action).Run(); err != nil {
+			fmt.Println("Failed:", err)
+			return
+		}
 
 	},
 }
