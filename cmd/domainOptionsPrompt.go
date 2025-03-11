@@ -56,7 +56,7 @@ func domainOptions() {
 		rootCmd.Execute()
 
 	case "Info":
-		rootCmd.SetArgs([]string{"list"})
+		rootCmd.SetArgs([]string{"info", choosenDomain})
 		rootCmd.Execute()
 
 	case "Deploy chaincode":
