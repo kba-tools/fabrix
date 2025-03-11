@@ -4,43 +4,127 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/tree"
+	"github.com/spf13/viper"
 )
 
-// Function to print organisation details neatly
-func printOrganisation(org Organisation) {
-	fmt.Printf("Organisation Name: %s\n", org.Name)
-	fmt.Printf("MSP ID: %s\n", org.MSPId)
 
-	fmt.Printf("\nCA Info:\n")
-	fmt.Printf("  Name: %s\n", org.Ca.Name)
-	fmt.Printf("  Port: %d\n", org.Ca.Port)
+func PrintNetworkInfo(domainName string) {
+	filePath := fmt.Sprintf("./fabrix/%v/Network", domainName)
 
-	fmt.Printf("\nPeers:\n")
-	for i, peer := range org.Peers {
-		fmt.Printf("  Peer %d:\n", i+1)
-		fmt.Printf("    Name: %s\n", peer.Name)
-		fmt.Printf("    Port: %d\n", peer.Port)
-		fmt.Printf("    CouchDB Name: %s\n", peer.CouchDbName)
-		fmt.Printf("    CouchDB Port: %d\n", peer.CouchDbPort)
+	// Set the file you want to read
+	viper.SetConfigName("network_info")
+	viper.SetConfigType("json")
+	viper.AddConfigPath(filePath)
+
+	// Read the config file
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("Error reading config file: %s\n", err)
+		return
 	}
-}
 
-// Example to print the entire NetworkInfo
-func printNetworkInfo(networkInfo *NetworkInfo) {
-	fmt.Printf("Network Name: %s\n", networkInfo.NetworkName)
-	fmt.Printf("Domain Name: %s\n", networkInfo.DomainName)
-	fmt.Printf("Number of Organisations: %d\n", networkInfo.NumberOfOrganisations)
-	fmt.Printf("Channel Name: %s\n", info.ChannelName)
+	// Fetch channel name
+	channelName := viper.GetString("channelName")
 
-	fmt.Printf("\nOrderer Info:\n")
-	printOrganisation(networkInfo.Orderer)
-	fmt.Printf("\nOrganisations Info:")
-	for _, org := range networkInfo.Organisations {
-		printOrganisation(org)
-		fmt.Println("---------------------------------")
+	// Fetch orderer details
+	orderMap := viper.Get("orderer").(map[string]interface{})
+	ordererPeers := orderMap["peers"].([]interface{})
+
+	ordererNode := tree.New().Root("Orderer")
+	ca := orderMap["ca"].(map[string]interface{})
+	caName := ca["name"].(string)
+	caPort := ca["port"].(float64)
+
+	ordererCA := tree.New().Root("CA")
+	ordererNode.Child(ordererCA)
+
+	ordererCA.Child(fmt.Sprintf("Name: %s", caName))
+	ordererCA.Child(fmt.Sprintf("Port: %d", int(caPort)))
+
+	ordererPeersTree := tree.New().Root("Peers")
+	ordererNode.Child(ordererPeersTree)
+
+	for _, ordererPeer := range ordererPeers {
+		ordererPeerMap := ordererPeer.(map[string]interface{})
+		ordererPeerName := ordererPeerMap["name"].(string)
+		ordererPeerPort := ordererPeerMap["port"].(float64)
+
+		ordererPeersTree.Child(fmt.Sprintf("Name: %s", ordererPeerName))
+		ordererPeersTree.Child(fmt.Sprintf("Port: %d", int(ordererPeerPort)))
+
 	}
-}
 
+	// Fetch organizations
+	organizations := viper.Get("organisations").([]interface{})
+
+	// Create a parent node for organizations
+	orgNodes := tree.New().Root("Organizations")
+
+	for _, org := range organizations {
+		orgMap := org.(map[string]interface{})
+		orgName := orgMap["name"].(string)
+		orgMSP := orgMap["mspid"].(string)
+		peers := orgMap["peers"].([]interface{})
+		ca := orgMap["ca"].(map[string]interface{})
+
+		caName := ca["name"].(string)
+		caPort := ca["port"].(float64)
+
+		currOrg := tree.New().Root(orgName)
+		orgNodes.Child(currOrg)
+
+		orgCA := tree.New().Root("CA")
+		orgCA.Child(fmt.Sprintf("Name: %s", caName))
+		orgCA.Child(fmt.Sprintf("Port: %d", int(caPort)))
+
+		orgNode := currOrg.Child(fmt.Sprintf("MSP Id: %s", orgMSP))
+		orgNode.Child(orgCA)
+		orgPeers := tree.New().Root("Peers")
+		orgNode.Child(orgPeers)
+
+		for _, peer := range peers {
+			peerMap := peer.(map[string]interface{})
+			peerName := peerMap["name"].(string)
+			peerPort := peerMap["port"].(float64)
+			couchdbName := peerMap["couchdbname"].(string)
+			couchdbPort := peerMap["couchdbport"].(float64)
+
+			currPeer := tree.New().Root(peerName)
+			orgPeers.Child(currPeer)
+
+			currPeer.Child(fmt.Sprintf("Name : %s", peerName))
+			currPeer.Child(fmt.Sprintf("Port : %d", int(peerPort)))
+			currPeer.Child(fmt.Sprintf("Couchdb: %s", couchdbName))
+			currPeer.Child(fmt.Sprintf("Couchdb Port : %d", int(couchdbPort)))
+
+		}
+	}
+
+	// Styling for the tree
+	enumeratorStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#1c71e8")).MarginRight(1).Bold(true)
+	rootStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#266ed4")).Bold(true)
+	itemStyle := lipgloss.NewStyle().Foreground(lipgloss.Color("#7fe81c"))
+
+	// Create the final tree with network info
+	t := tree.
+		Root(fmt.Sprintf("Domain: %s", domainName)).
+		Child(fmt.Sprintf("Channel: %s", channelName)).
+		Child(orgNodes).
+		Child(ordererNode).
+		Enumerator(tree.RoundedEnumerator).
+		EnumeratorStyle(enumeratorStyle).
+		RootStyle(rootStyle).
+		ItemStyle(itemStyle)
+
+	styledTree := lipgloss.NewStyle().
+		MarginLeft(5).
+		Render(t.String())
+
+	fmt.Println(styledTree)
+
+}
 
 // Save NetworkInfo to a JSON file
 func SaveNetworkInfoToFile(info *NetworkInfo, filePath string) error {
@@ -64,5 +148,3 @@ func SaveNetworkInfoToFile(info *NetworkInfo, filePath string) error {
 	}
 	return nil
 }
-
-
