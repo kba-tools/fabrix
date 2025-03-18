@@ -33,36 +33,4 @@ func Execute() {
 
 }
 
-// func startPrompt() {
-// 	options := []string{"Create new domain", "Choose existing domain", "Exit"}
 
-// 	var selectedOption string
-// 	prompt := &survey.Select{
-// 		Message: "Choose an option:",
-// 		Options: options,
-// 	}
-
-// 	if err := survey.AskOne(prompt, &selectedOption); err != nil {
-// 		fmt.Println("Error:", err)
-// 		return
-// 	}
-
-// switch selectedOption {
-
-// case "Create new domain":
-// 	rootCmd.SetArgs([]string{"create"})
-// 	rootCmd.Execute()
-
-// case "Choose existing domain":
-// 	rootCmd.SetArgs([]string{"list"})
-// 	rootCmd.Execute()
-
-// case "Go back":
-// 	rootCmd.SetArgs([]string{"fabrix"})
-// 	rootCmd.Execute()
-
-// case "Exit":
-// 	fmt.Println("Exiting...")
-// 	os.Exit(0)
-// }
-// }
