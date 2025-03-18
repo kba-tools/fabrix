@@ -81,7 +81,7 @@ import (
 )
 
 var ccPath string
-var ccVersion string
+// var ccVersion string
 var ccLang string
 
 // networkCmd represents the network command
