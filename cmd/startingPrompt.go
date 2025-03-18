@@ -17,15 +17,17 @@ var startingPromptCmd = &cobra.Command{
 and usage of using your command.`,
 	Hidden: true,
 	Run: func(cmd *cobra.Command, args []string) {
+
 		var mainChoice string
 
 		deployCC := huh.NewForm(
 			huh.NewGroup(
 
 				huh.NewSelect[string]().
-					Options(huh.NewOptions("Create new Network configuration", "Choose existing configuration", "Exit")...).
+					Options(huh.NewOptions("Create new Network configuration",
+						"Choose existing configuration",
+						"Exit")...).
 					Title("Select an Option").
-					// Description("What you want to do?").
 					Value(&mainChoice),
 			),
 		).WithShowHelp(true).WithTheme(huh.ThemeCharm())

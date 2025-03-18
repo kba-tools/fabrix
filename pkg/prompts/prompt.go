@@ -3,7 +3,7 @@ package prompts
 import (
 	"fmt"
 
-	"github.com/fatih/color"
+	"github.com/charmbracelet/lipgloss"
 )
 
 func ShowMainMenu() {
@@ -14,13 +14,34 @@ func ShowMainMenu() {
 		"|  _| (_| | |_) | |  | |>  < \n" +
 		"|_|  \\__,_|_.__/|_|  |_/_/\\_\\\n"
 
-	fmt.Print("\n\n")
-	color.Blue(asciiArt)
-	fmt.Print("\n")
+	asciiPrint := lipgloss.NewStyle().
+		Blink(true).
+		Foreground(lipgloss.Color("#266ed4")).
+		Bold(true).
+		Render(asciiArt)
 
-	color.Green("The helper tool for chaincode developers to create fabric network, it does all the heavy lifting for you!!!")
-	color.Green("You will be guided throughout the process.")
-	color.Yellow("Let's start...")
-	fmt.Print("\n")
+	boxStyle := lipgloss.NewStyle().
+		Padding(1, 2).
+		Border(lipgloss.DoubleBorder()).
+		BorderForeground(lipgloss.Color("62")).
+		Foreground(lipgloss.Color("233")).
+		Align(lipgloss.Center)
+	// Style for the text
+	textStyle := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#3deb34")).
+		Italic(true).
+		Align(lipgloss.Center)
+
+	// Define the message
+	message := `The helper tool for chaincode developers to create fabric network, 
+it does all the heavy lifting for you!!! 
+
+You will be guided throughout the process.
+
+Let's start...`
+
+	combinedText := asciiPrint + "\n\n" + textStyle.Render(message)
+
+	fmt.Println(boxStyle.Render(combinedText))
+
 }
-
