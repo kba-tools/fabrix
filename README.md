@@ -31,6 +31,9 @@ This CLI tool helps manage a Hyperledger Fabric network, including creating new 
 - **Chaincode Deployment:** Install and manage chaincode on the network.
 - **Interactive UI:** Uses `huh` for interactive prompts and `lipgloss` for styled terminal 
 ## :zap: Usage
+
+
+###  :electric_plug: Installation
 Ensure you have Go installed and set up properly.
 
 ```sh
@@ -42,15 +45,7 @@ cd your-repo
 go build -o fabric-cli
 
 # Move the binary to a directory in your PATH
-mv fabric-cli /usr/local/bin/
-```
-
-###  :electric_plug: Installation
-- Steps on how to install this project, to use it.
-- Be very detailed here, For example, if you have tools which run on different operating systems, write installation steps for all of them.
-
-```
-$ add installations steps if you have to.
+sudo mv fabric-cli /usr/local/bin/
 ```
 
 ###  :package: Commands
