@@ -1,6 +1,7 @@
 # Hyperledger Fabric Network Management CLI
 
 # Introduction
+
 This CLI tool helps manage a Hyperledger Fabric network, including creating new network configurations, selecting existing ones, and managing chaincode deployment. It is built using Go and leverages Cobra for command-line functionality.
 
 ## :ledger: Index
@@ -13,28 +14,30 @@ This CLI tool helps manage a Hyperledger Fabric network, including creating new 
   - [Pre-Requisites](#notebook-pre-requisites)
   - [Developmen Environment](#nut_and_bolt-development-environment)
   - [File Structure](#file_folder-file-structure)
-  - [Build](#hammer-build)  
-  - [Deployment](#rocket-deployment)  
+  - [Build](#hammer-build)
+  - [Deployment](#rocket-deployment)
 - [Community](#cherry_blossom-community)
   - [Contribution](#fire-contribution)
   - [Branches](#cactus-branches)
-  - [Guideline](#exclamation-guideline)  
+  - [Guideline](#exclamation-guideline)
 - [FAQ](#question-faq)
 - [Resources](#page_facing_up-resources)
 - [Gallery](#camera-gallery)
 - [Credit/Acknowledgment](#star2-creditacknowledgment)
 - [License](#lock-license)
 
-##  :beginner: About
+## :beginner: About
+
 - **Configuration Management:** Create new network configurations or select existing ones.
-- **Network Setup:** Start a Fabric network, view info, 
+- **Network Setup:** Start a Fabric network, view info,
 - **Chaincode Deployment:** Install and manage chaincode on the network.
-- **Interactive UI:** Uses `huh` for interactive prompts and `lipgloss` for styled terminal 
-## :zap: Usage
+- **Interactive UI:** Uses `huh` for interactive prompts and `lipgloss` for styled terminal
 
-
-###  :electric_plug: Installation
+### :notebook: Pre-Requisites
 Ensure you have Go installed and set up properly.
+
+
+### :nut_and_bolt: Installation
 
 ```sh
 # Clone the repository
@@ -48,80 +51,50 @@ go build -o fabric-cli
 sudo mv fabric-cli /usr/local/bin/
 ```
 
-###  :package: Commands
-- Commands to start the project.
+### :package: Usage
 
-##  :wrench: Development
-If you want other people to contribute to this project, this is the section, make sure you always add this.
+- Open a terminal at any location
 
-### :notebook: Pre-Requisites
-List all the pre-requisites the system needs to develop this project.
-- A tool
-- B tool
+```sh
+./fabric-cli
+```
 
-###  :nut_and_bolt: Development Environment
-Write about setting up the working environment for your project.
-- How to download the project...
-- How to install dependencies...
+## :wrench: Development
+
+want to contribute to this project? Make a pull request !!!
 
 
-###  :file_folder: File Structure
-Add a file structure here with the basic details about files, below is an example.
+### :file_folder: File Structure
 
 ```
 .
-├── assets
-│   ├── css
-│   │   ├── index-ui.css
-│   │   └── rate-ui.css
-│   ├── images
-│   │   ├── icons
-│   │   │   ├── shrink-button.png
-│   │   │   └── umbrella.png
-│   │   ├── logo_144.png
-│   │   └── Untitled-1.psd
-│   └── javascript
-│       ├── index.js
-│       └── rate.js
-├── CNAME
-├── index.html
-├── rate.html
+├── cmd
+├── pkg
+│   ├── configs
+│   ├── inputs
+│   └── prompts
+├── main.co
 └── README.md
 ```
 
-| No | File Name | Details 
-|----|------------|-------|
-| 1  | index | Entry point
 
-###  :hammer: Build
-Write the build Instruction here.
+### :fire: Contribution
 
-### :rocket: Deployment
-Write the deployment instruction here.
+Your contributions are always welcome and appreciated. Following are the things you can do to contribute to this project.
 
-## :cherry_blossom: Community
+1.  **Report a bug** <br>
+    If you think you have encountered a bug, and I should know about it, feel free to report it [here]() and I will take care of it.
 
-If it's open-source, talk about the community here, ask social media links and other links.
+2.  **Request a feature** <br>
+    You can also request for a feature [here](), and if it will viable, it will be picked for development.
 
- ###  :fire: Contribution
-
- Your contributions are always welcome and appreciated. Following are the things you can do to contribute to this project.
-
- 1. **Report a bug** <br>
- If you think you have encountered a bug, and I should know about it, feel free to report it [here]() and I will take care of it.
-
- 2. **Request a feature** <br>
- You can also request for a feature [here](), and if it will viable, it will be picked for development.  
-
- 3. **Create a pull request** <br>
- It can't get better then this, your pull request will be appreciated by the community. You can get started by picking up any open issues from [here]() and make a pull request.
-
- > If you are new to open-source, make sure to check read more about it [here](https://www.digitalocean.com/community/tutorial_series/an-introduction-to-open-source) and learn more about creating a pull request [here](https://www.digitalocean.com/community/tutorials/how-to-create-a-pull-request-on-github).
+3.  **Create a pull request** <br>
+    It can't get better then this, your pull request will be appreciated by the community. You can get started by picking up any open issues from [here]() and make a pull request.
 
 
- ### :cactus: Branches
+### :cactus: Branches
 
- I use an agile continuous integration methodology, so the version is frequently updated and development is really fast.
+I use an agile continuous integration methodology, so the version is frequently updated and development is really fast.
 
 1. **`stage`** is the development branch.
 
@@ -142,22 +115,11 @@ If it's open-source, talk about the community here, ask social media links and o
 
 After this, changes will be merged.
 
+## :camera: Gallery
 
-### :exclamation: Guideline
-coding guidelines or other things you want people to follow should follow.
-
-
-## :question: FAQ
-You can optionally add a FAQ section about the project.
-
-##  :page_facing_up: Resources
-Add important resources here
-
-##  :camera: Gallery
 Pictures of your project.
 
-## :star2: Credit/Acknowledgment
-Credit the authors here.
 
-##  :lock: License
+## :lock: License
+
 Add a license here, or a link to it.
