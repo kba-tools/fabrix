@@ -5,7 +5,7 @@
 This CLI tool helps manage a Hyperledger Fabric network, including creating new network configurations, selecting existing ones, and managing chaincode deployment. It is built using Go and leverages Cobra for command-line functionality.
 
 
-## :beginner: Features
+## ✨ Features
 
 - **Configuration Management:** Create new network configurations or select existing ones.
 - **Network Setup:** Start a Fabric network, view info,
