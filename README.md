@@ -1,37 +1,18 @@
 # Hyperledger Fabric Network Management CLI
 
-# Introduction
+## :beginner: About
 
 This CLI tool helps manage a Hyperledger Fabric network, including creating new network configurations, selecting existing ones, and managing chaincode deployment. It is built using Go and leverages Cobra for command-line functionality.
 
-## :ledger: Index
 
-- [About](#beginner-about)
-- [Usage](#zap-usage)
-  - [Installation](#electric_plug-installation)
-  - [Commands](#package-commands)
-- [Development](#wrench-development)
-  - [Pre-Requisites](#notebook-pre-requisites)
-  - [Developmen Environment](#nut_and_bolt-development-environment)
-  - [File Structure](#file_folder-file-structure)
-  - [Build](#hammer-build)
-  - [Deployment](#rocket-deployment)
-- [Community](#cherry_blossom-community)
-  - [Contribution](#fire-contribution)
-  - [Branches](#cactus-branches)
-  - [Guideline](#exclamation-guideline)
-- [FAQ](#question-faq)
-- [Resources](#page_facing_up-resources)
-- [Gallery](#camera-gallery)
-- [Credit/Acknowledgment](#star2-creditacknowledgment)
-- [License](#lock-license)
-
-## :beginner: About
+## :beginner: Features
 
 - **Configuration Management:** Create new network configurations or select existing ones.
 - **Network Setup:** Start a Fabric network, view info,
 - **Chaincode Deployment:** Install and manage chaincode on the network.
-- **Interactive UI:** Uses `huh` for interactive prompts and `lipgloss` for styled terminal
+- **Interactive UI:** Interactive prompts for easy usage
+
+
 
 ### :notebook: Pre-Requisites
 Ensure you have Go installed and set up properly.
