@@ -13,7 +13,6 @@ This CLI tool helps manage a Hyperledger Fabric network, including creating new 
 - **Interactive UI:** Interactive prompts for easy usage
 
 
-
 ### :notebook: Pre-Requisites
 Ensure you have Go installed and set up properly.
 
