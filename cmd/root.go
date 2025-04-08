@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/vineshtk/fabrix/pkg/prompts"
+	"github.com/vineshtk/fabrix/pkg/utils"
 )
 
 var version = "0.0.1"
@@ -19,7 +19,7 @@ var rootCmd = &cobra.Command{
 	for deploying and testing the chaincode.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		prompts.ShowMainMenu()
+		utils.ShowMainMenu()
 	},
 }
 
@@ -32,5 +32,3 @@ func Execute() {
 	rootCmd.Execute()
 
 }
-
-

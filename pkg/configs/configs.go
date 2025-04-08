@@ -649,10 +649,10 @@ func CreateFolders(domainName string) {
 	folder1 := filepath.Join(rootFolder, "Network/config")
 	folder2 := filepath.Join(rootFolder, "Network/docker")
 	folder3 := filepath.Join(rootFolder, "Network/peercfg")
-	folder4 := filepath.Join(rootFolder, "Network/organizations")
+	// folder4 := filepath.Join(rootFolder, "Network/organizations")
 
 	// Create the subfolders
-	subfolders := []string{folder1, folder2, folder3, folder4}
+	subfolders := []string{folder1, folder2, folder3}
 
 	for _, folder := range subfolders {
 		err = os.MkdirAll(folder, os.ModePerm)
@@ -661,7 +661,6 @@ func CreateFolders(domainName string) {
 			return
 		}
 	}
-
 	// fmt.Printf("Folders for domain %v created successfully!\n", domainName)
 }
 
@@ -910,6 +909,7 @@ func CreateStartNetwork(domainName string, orgPeers map[string]int, channelName 
 docker compose -f docker/docker-compose-ca.yaml up -d
 sleep 3
 
+sudo chmod -R 777 organizations/
 
 echo "------------Register and enroll the users for each organization—-----------"
 

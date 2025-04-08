@@ -133,7 +133,7 @@ and usage of using your command.`,
 				BorderStyle(lipgloss.RoundedBorder()).
 				BorderForeground(lipgloss.Color("63")).
 				Padding(1, 2).
-				Render("edfghbn ugggggggggg hvgffukjyig  jkvhgfcgv hdrythfgkj")
+				Render("this is a test message")
 
 			// Calculate the left padding to shift text to the right side
 			textWidth := lipgloss.Width(styledText)
