@@ -1,32 +1,21 @@
 package cmd
 
-// import (
-// 	"fmt"
-// 	"os"
-// 	"strings"
+import (
+	"github.com/spf13/cobra"
+	"github.com/vineshtk/fabrix/pkg/utils"
+)
 
-// 	tea "github.com/charmbracelet/bubbletea"
-// 	"github.com/charmbracelet/lipgloss"
-// 	"github.com/charmbracelet/bubbles/list"
-// 	"github.com/spf13/cobra"
-// )
+var testCmd = &cobra.Command{
+	Use:   "test",
+	Short: "Use this command to test different functionalities.",
+	Run: func(cmd *cobra.Command, args []string) {
+		utils.GetAllChaincodeDefenitions(choosenDomain)
+	},
+}
 
-// var testCmd = &cobra.Command{
-// 	Use:   "test",
-// 	Short: "Use this command to test different functionalities.",
-// 	Run: func(cmd *cobra.Command, args []string) {
-// 		tabs := []string{"Create New Domain", "Choose Existing Domain", "Exit"}
-// 		m := newModel(tabs)
-// 		if _, err := tea.NewProgram(m).Run(); err != nil {
-// 			fmt.Println("Error running program:", err)
-// 			os.Exit(1)
-// 		}
-// 	},
-// }
-
-// func init() {
-// 	rootCmd.AddCommand(testCmd)
-// }
+func init() {
+	rootCmd.AddCommand(testCmd)
+}
 
 // // Define a custom list item struct
 // type listItem struct {
@@ -81,7 +70,7 @@ package cmd
 // 			return m, tea.Quit
 // 		case "right", "l", "n", "tab":
 // 			m.activeTab = min(m.activeTab+1, len(m.Tabs)-1)
-// 			m.showList = m.activeTab == 1 
+// 			m.showList = m.activeTab == 1
 // 			return m, nil
 // 		case "left", "h", "p", "shift+tab":
 // 			m.activeTab = max(m.activeTab-1, 0)

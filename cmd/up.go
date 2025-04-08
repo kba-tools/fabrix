@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/charmbracelet/huh/spinner"
 	"github.com/spf13/cobra"
 )
 
@@ -18,33 +19,44 @@ var upCmd = &cobra.Command{
 and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		scriptPath := fmt.Sprintf("./fabrix/%v/Network/startNetwork.sh", args[0])
-		scriptDir := fmt.Sprintf("./fabrix/%v/Network/", args[0])
+		action := func() {
+			scriptPath := fmt.Sprintf("./fabrix/%v/Network/startNetwork.sh", args[0])
+			scriptDir := fmt.Sprintf("./fabrix/%v/Network/", args[0])
 
-		err := os.Chmod(scriptPath, 0755)
-		if err != nil {
-			fmt.Printf("Error making script executable: %v\n", err)
-			return
+			err := os.Chmod(scriptPath, 0755)
+			if err != nil {
+				fmt.Printf("Error making script executable: %v\n", err)
+				return
+			}
+
+			command := exec.Command("/bin/bash", "startNetwork.sh")
+			command.Dir = scriptDir
+
+			command.Stdout = os.Stdout
+			command.Stderr = os.Stderr
+
+			err = command.Run()
+
+			if err != nil {
+				fmt.Printf("Error executing script: %v\n", err)
+				return
+			}
+
 		}
 
-		command := exec.Command("/bin/bash", "startNetwork.sh")
-		command.Dir = scriptDir
+		// if err := spinner.New().Title("Deployment in progress...").Action(action).Run(); err != nil {
+		// 	fmt.Println("Failed:", err)
+		// 	return
+		// }
 
-		command.Stdout = os.Stdout
-		command.Stderr = os.Stderr
-
-		// command.Stdout = io.Discard
-		// command.Stderr = io.Discard
-
-		err = command.Run()
-		if err != nil {
-			fmt.Printf("Error executing script: %v\n", err)
-			return
-		}
+		spinner.New().Title("Deployment in progress...").Action(action).Run()
 
 		fmt.Println("Network started successfully!")
+		// utils.ClearTerminal()
+
 		rootCmd.SetArgs([]string{"dp"})
 		rootCmd.Execute()
+
 	},
 }
 
