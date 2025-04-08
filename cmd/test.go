@@ -2,14 +2,13 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/vineshtk/fabrix/pkg/utils"
 )
 
 var testCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Use this command to test different functionalities.",
 	Run: func(cmd *cobra.Command, args []string) {
-		utils.GetAllChaincodeDefenitions(choosenDomain)
+
 	},
 }
 

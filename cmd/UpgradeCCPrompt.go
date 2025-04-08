@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/huh/spinner"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/vineshtk/fabrix/pkg/configs"
 	"golang.org/x/term"
 
 	"github.com/spf13/cobra"
@@ -25,21 +26,12 @@ and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		chaincodeParams := ChaincodeParams{}
-		// currentDir, erro := os.Getwd()
-		// if erro!= nil{
-		// 	fmt.Println("error cd", erro)
-		// }
 
-		// fmt.Println("cc dir", currentDir)
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			fmt.Println("Error getting home directory:", err)
 			return
 		}
-
-		// fmt.Println("full path:", nwPath)
-
-		// fmt.Println("Relative path:", relativePath)
 
 		deployCC := huh.NewForm(
 			huh.NewGroup(
@@ -102,14 +94,13 @@ and usage of using your command.`,
 			log.Fatalf("Failed to get absolute path: %v", err)
 		}
 
-		// ccRelativePath, err := filepath.Rel(nwPath, chaincodeParams.ccPath)
-		// if err != nil {
-		// 	log.Fatalf("Failed to get relative path: %v", err)
-		// }
+		ccRelativePath, err := filepath.Rel(nwPath, chaincodeParams.ccPath)
+		if err != nil {
+			log.Fatalf("Failed to get relative path: %v", err)
+		}
 
 		action := func() {
-			// configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
-			// utils.GetAllChaincodeDefenitiions(choosenDomain)
+			configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
 			width, _, err := term.GetSize(int(os.Stdout.Fd()))
 			if err != nil {
 				fmt.Println("Failed to get terminal size:", err)
