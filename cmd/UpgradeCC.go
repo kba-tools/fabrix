@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
+	"strconv"
 
 	"github.com/charmbracelet/huh"
-	"github.com/charmbracelet/huh/spinner"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"github.com/vineshtk/fabrix/pkg/utils"
-	"golang.org/x/term"
 )
 
 // networkCmd represents the network command
@@ -25,7 +22,7 @@ and usage of using your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ccDefinitions := utils.GetAllChaincodeDefenitions(choosenDomain)
-		fmt.Println(ccDefinitions)
+
 		// Define struct for the chaincode definition
 		type ChaincodeDefinition struct {
 			Name     string `json:"name"`
@@ -55,36 +52,82 @@ and usage of using your command.`,
 			ccMap[def.Name] = def
 		}
 
-		chaincodeParams := ChaincodeParams{}
-
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			fmt.Println("Error getting home directory:", err)
 			return
 		}
 
-		deployCC := huh.NewForm(
+		var (
+			ccName     string
+			ccSequence string
+			ccVersion  string
+			ccLabel    string
+			ccLang     string
+			ccPath     string
+		)
+
+		versionDescription := func() string {
+			selectedCC := ccMap[ccName]
+			version := selectedCC.Version
+			return fmt.Sprintf("Current version is: %v", version)
+		}
+
+		sequenceDescription := func() string {
+			selectedCC := ccMap[ccName]
+			sequence := selectedCC.Sequence
+			return fmt.Sprintf("Current sequence is: %v", sequence)
+		}
+
+		versionOption := func() []huh.Option[string] {
+			selectedCC := ccMap[ccName]
+			version, _ := strconv.ParseFloat(selectedCC.Version, 64)
+			return huh.NewOptions(fmt.Sprintf("Upgrade version to %v", version+0.1))
+		}
+
+		sequenceOption := func() []huh.Option[string] {
+			selectedCC := ccMap[ccName]
+			return huh.NewOptions(fmt.Sprintf("Upgrade sequence to %v", float64(selectedCC.Sequence)+1))
+		}
+
+		form := huh.NewForm(
 			huh.NewGroup(
 				huh.NewSelect[string]().
-					Title("Installed Chaincodes").
 					Options(ccNames...).
-					Description("Choose chaincode to upgrade").Value(&chaincodeParams.ccName),
+					Value(&ccName).
+					Title("Installed Chaincode(s)").
+					Height(5),
+					
+				huh.NewSelect[string]().
+					Value(&ccSequence).
+					Title("Chaincode Sequence").
+					Height(5).
+					DescriptionFunc(sequenceDescription, &ccName).
+					OptionsFunc(sequenceOption, &ccName),
+
+				huh.NewSelect[string]().
+					Value(&ccVersion).
+					Height(5).
+					Title("Chaincode Version").
+					DescriptionFunc(versionDescription, &ccName).
+					OptionsFunc(versionOption, &ccName),
 
 				huh.NewSelect[string]().
 					Options(huh.NewOptions("golang", "JavaScript", "Java")...).
 					Title("Chaincode Language").
+					Height(5).
 					Description("Choose your chaincode language").
 					Validate(func(t string) error {
 						if t == "Java" {
-							return fmt.Errorf("Uh oh! sorry we don't support Java right now")
+							return fmt.Errorf("uh oh! sorry we don't support Java right now")
 						}
 						return nil
 					}).
-					Value(&chaincodeParams.ccLang),
+					Value(&ccLang),
 
 				huh.NewInput().
 					Title("Chaincode Label").
-					Description("What's the Label for your Chaincode?").Value(&chaincodeParams.ccLabel),
+					Description("What's the Label for your Chaincode?").Value(&ccLabel),
 
 				huh.NewFilePicker().
 					Title("Chaincode Path").
@@ -93,73 +136,61 @@ and usage of using your command.`,
 					FileAllowed(false).
 					CurrentDirectory(homeDir).
 					ShowPermissions(false).
-					Value(&chaincodeParams.ccPath),
-
-				huh.NewInput().
-					Title("Chaincode Sequence").
-					Description("What's the sequence for your Chaincode?").Value(&chaincodeParams.ccSequence),
-
-				huh.NewInput().
-					Title("Chaincode Version").
-					Description("What's the version for your Chaincode?").Value(&chaincodeParams.ccVersion),
-
-				huh.NewConfirm().
-					Title("Lets deploy your chaincode?").
-					Value(&chaincodeParams.deploy).
-					Affirmative("Yes!").
-					Negative("No."),
+					Value(&ccPath),
 			),
-		).WithShowHelp(true).WithTheme(huh.ThemeDracula())
+			huh.NewGroup(),
+		)
 
-		err = deployCC.Run()
+		err = form.Run()
 		if err != nil {
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 
-		nwPath := fmt.Sprintf("./fabrix/%v/Network", choosenDomain)
+		fmt.Printf("%s, %s\n", ccName, ccSequence)
 
-		// Resolve to absolute (full) path
-		nwPath, err = filepath.Abs(nwPath)
-		if err != nil {
-			log.Fatalf("Failed to get absolute path: %v", err)
-		}
+		// nwPath := fmt.Sprintf("./fabrix/%v/Network", choosenDomain)
+
+		// // Resolve to absolute (full) path
+		// nwPath, err = filepath.Abs(nwPath)
+		// if err != nil {
+		// 	log.Fatalf("Failed to get absolute path: %v", err)
+		// }
 
 		// ccRelativePath, err := filepath.Rel(nwPath, chaincodeParams.ccPath)
 		// if err != nil {
 		// 	log.Fatalf("Failed to get relative path: %v", err)
 		// }
 
-		action := func() {
-			// configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
-			width, _, err := term.GetSize(int(os.Stdout.Fd()))
-			if err != nil {
-				fmt.Println("Failed to get terminal size:", err)
-				return
-			}
+		// action := func() {
+		// 	// configs.InstallChaincode(choosenDomain, ccRelativePath, chaincodeParams.ccLang, chaincodeParams.ccLabel, chaincodeParams.ccName, chaincodeParams.ccVersion, chaincodeParams.ccSequence)
+		// 	width, _, err := term.GetSize(int(os.Stdout.Fd()))
+		// 	if err != nil {
+		// 		fmt.Println("Failed to get terminal size:", err)
+		// 		return
+		// 	}
 
-			// Create styled text
-			styledText := lipgloss.NewStyle().
-				BorderStyle(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("63")).
-				Padding(1, 2).
-				Render("this is a test message")
+		// 	// Create styled text
+		// 	styledText := lipgloss.NewStyle().
+		// 		BorderStyle(lipgloss.RoundedBorder()).
+		// 		BorderForeground(lipgloss.Color("63")).
+		// 		Padding(1, 2).
+		// 		Render("this is a test message")
 
-			// Calculate the left padding to shift text to the right side
-			textWidth := lipgloss.Width(styledText)
-			leftPadding := width - textWidth
+		// 	// Calculate the left padding to shift text to the right side
+		// 	textWidth := lipgloss.Width(styledText)
+		// 	leftPadding := width - textWidth
 
-			// Apply the padding (spaces on the left)
-			finalOutput := lipgloss.NewStyle().PaddingLeft(leftPadding).Render(styledText)
+		// 	// Apply the padding (spaces on the left)
+		// 	finalOutput := lipgloss.NewStyle().PaddingLeft(leftPadding).Render(styledText)
 
-			// Print
-			fmt.Println(finalOutput)
-		}
+		// 	// Print
+		// 	fmt.Println(finalOutput)
+		// }
 
-		if err := spinner.New().Title("Deployment in progress...").Action(action).Run(); err != nil {
-			fmt.Println("Failed:", err)
-			return
-		}
+		// if err := spinner.New().Title("Deployment in progress...").Action(action).Run(); err != nil {
+		// 	fmt.Println("Failed:", err)
+		// 	return
+		// }
 
 	},
 }
